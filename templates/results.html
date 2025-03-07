@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}Timetable Results{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2 class="card-title">Generated Timetables</h2>
+    
+    <div class="timetable-controls">
+        <div class="form-group">
+            <label for="class-select">Select Class:</label>
+            <select id="class-select" onchange="showTimetable()">
+                {% for class_name in timetables.keys() %}
+                <option value="{{ class_name }}">{{ class_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button onclick="printTimetable()" class="secondary-btn">Print</button>
+        <button onclick="exportToPDF()" class="secondary-btn">Export to PDF</button>
+    </div>
+    
+    {% for class_name, timetable in timetables.items() %}
+    <div id="timetable-{{ class_name }}" class="timetable-container" {% if loop.first %}style="display: block"{% else %}style="display: none"{% endif %}>
+        <h3>Timetable for {{ class_name }}</h3>
+        
+        <div class="timetable-scroll">
+            <table class="timetable">
+                <thead>
+                    <tr>
+                        <th>Day / Period</th>
+                        {% for i in range(periods_per_day) %}
+                        <th>Period {{ i + 1 }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for day in days %}
+                    <tr>
+                        <td class="day">{{ day }}</td>
+                        {% for subject in timetable[day] %}
+                        <td class="{% if '*' in subject %}lab-subject{% endif %}">
+                            {{ subject.replace('*', '') }}
+                            {% if subject != 'Free' and subject != 'Unassigned' %}
+                            <div class="teacher">{{ class_teacher_assignments[class_name].get(subject.replace('*', ''), '') }}</div>
+                            {% endif %}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="subject-stats">
+            <h4>Subject Hours Distribution</h4>
+            <ul>
+                {% for subject, hours in class_subjects[class_name].items() %}
+                <li>
+                    <strong>{{ subject }}:</strong>
+                    {% if is_lab_subject(subject, class_name) %}
+                    <span class="badge lab">Lab</span>
+                    {% endif %}
+                    {{ count_subject_hours(subject, timetable) }} hours
+                    (Teacher: {{ class_teacher_assignments[class_name].get(subject, 'None') }})
+                </li>
+                {% endfor %}
+                <li><strong>Free Periods:</strong> {{ sum(day.count("Free") for day in timetable.values()) }}</li>
+            </ul>
+        </div>
+    </div>
+    {% endfor %}
+    
+    <div class="action-buttons">
+        <a href="{{ url_for('setup') }}" class="btn">Create Another Timetable</a>
+    </div>
+</div>
+{% endblock %}
