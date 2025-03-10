@@ -3,64 +3,98 @@
 {% block title %}Setup - Timetable Generator{% endblock %}
 
 {% block content %}
-<div class="setup-card card">
-    <h1 class="setup-title">Create Your Timetable</h1>
+<div class="card setup-card">
+    <div class="setup-header">
+        <h1 class="setup-title">Create Your Timetable</h1>
+        <p class="setup-subtitle">Fill in the details below to generate your perfect timetable</p>
+    </div>
+
     <form class="setup-form" action="{{ url_for('generate') }}" method="POST">
-        <div class="form-group">
-            <label for="classes">
-                <i class="fas fa-users"></i> Classes
-            </label>
-            <input type="text" id="classes" name="classes" 
-                   placeholder="e.g., Class 10A, Class 10B" required>
-            <small>Separate multiple classes with commas</small>
-        </div>
+        <div class="form-section">
+            <h2 class="section-title">
+                <i class="fas fa-school"></i> Basic Information
+            </h2>
+            
+            <div class="form-group">
+                <label for="classes">
+                    <i class="fas fa-users"></i> Classes
+                </label>
+                <input type="text" id="classes" name="classes" class="form-control" 
+                       placeholder="e.g., Class 10A, Class 10B" required>
+                <small>Separate multiple classes with commas</small>
+            </div>
 
-        <div class="form-group">
-            <label for="default_subjects">
-                <i class="fas fa-book"></i> Default Subjects
-            </label>
-            <input type="text" id="default_subjects" name="default_subjects" 
-                   placeholder="e.g., Math:6, English:5" required>
-            <small>Format: subject:hours, separate with commas</small>
-        </div>
+            <div class="form-group">
+                <label for="default_subjects">
+                    <i class="fas fa-book"></i> Default Subjects
+                </label>
+                <input type="text" id="default_subjects" name="default_subjects" class="form-control" 
+                       placeholder="e.g., Math:6, English:5" required>
+                <small>Format: subject:hours, separate with commas</small>
+            </div>
 
-        <div class="form-group">
-            <label for="periods_per_day">
-                <i class="fas fa-clock"></i> Periods per Day
-            </label>
-            <input type="number" id="periods_per_day" name="periods_per_day" 
-                   value="6" min="1" max="10">
+            <div class="form-group">
+                <label for="periods_per_day">
+                    <i class="fas fa-clock"></i> Periods per Day
+                </label>
+                <input type="number" id="periods_per_day" name="periods_per_day" class="form-control" 
+                       value="6" min="1" max="10">
+            </div>
         </div>
 
         <div class="form-section">
-            <h3><i class="fas fa-flask"></i> Lab Subjects</h3>
+            <h2 class="section-title">
+                <i class="fas fa-flask"></i> Lab Subjects
+            </h2>
+            
             <div id="lab-subjects">
                 <div class="lab-subject">
-                    <input type="text" name="lab_subjects[]" placeholder="Subject Name">
-                    <input type="number" name="lab_hours[]" placeholder="Total Hours" min="1">
-                    <input type="number" name="lab_consecutive[]" placeholder="Consecutive Periods" min="1" max="3">
-                    <button type="button" class="btn-remove">
+                    <div class="form-group">
+                        <label>Subject Name</label>
+                        <input type="text" name="lab_subjects[]" class="form-control" placeholder="e.g., Physics Lab">
+                    </div>
+                    <div class="form-group">
+                        <label>Total Hours</label>
+                        <input type="number" name="lab_hours[]" class="form-control" placeholder="Hours" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Consecutive Periods</label>
+                        <input type="number" name="lab_consecutive[]" class="form-control" placeholder="e.g., 2" min="1" max="3">
+                    </div>
+                    <button type="button" class="btn-remove" onclick="removeEntry(this)">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
             </div>
-            <button type="button" class="btn btn-secondary" onclick="addLabSubject()">
+            
+            <button type="button" class="btn btn-secondary add-btn" onclick="addLabSubject()">
                 <i class="fas fa-plus"></i> Add Lab Subject
             </button>
         </div>
 
         <div class="form-section">
-            <h3><i class="fas fa-chalkboard-teacher"></i> Teachers</h3>
+            <h2 class="section-title">
+                <i class="fas fa-chalkboard-teacher"></i> Teachers
+            </h2>
+            
             <div id="teachers">
                 <div class="teacher-entry">
-                    <input type="text" name="teacher_names[]" placeholder="Teacher Name">
-                    <input type="text" name="teacher_subjects[]" placeholder="Subjects (comma-separated)">
-                    <button type="button" class="btn-remove">
+                    <div class="form-group">
+                        <label>Teacher Name</label>
+                        <input type="text" name="teacher_names[]" class="form-control" placeholder="e.g., Mr. Smith">
+                    </div>
+                    <div class="form-group">
+                        <label>Subjects</label>
+                        <input type="text" name="teacher_subjects[]" class="form-control" placeholder="e.g., Math, Physics">
+                        <small>Separate subjects with commas</small>
+                    </div>
+                    <button type="button" class="btn-remove" onclick="removeEntry(this)">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
             </div>
-            <button type="button" class="btn btn-secondary" onclick="addTeacher()">
+            
+            <button type="button" class="btn btn-secondary add-btn" onclick="addTeacher()">
                 <i class="fas fa-plus"></i> Add Teacher
             </button>
         </div>
@@ -73,32 +107,65 @@
 
 <style>
     .setup-card {
-        max-width: 800px;
-        margin: 0 auto;
+        max-width: 900px;
+    }
+
+    .setup-header {
+        text-align: center;
+        margin-bottom: 2rem;
     }
 
     .setup-title {
-        text-align: center;
-        margin-bottom: 2rem;
-        color: var(--primary);
-        font-size: 2rem;
-        animation: fadeIn 0.5s ease;
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .setup-subtitle {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
     }
 
     .setup-form {
         display: flex;
         flex-direction: column;
-        gap: 1.5rem;
+        gap: 2rem;
+    }
+
+    .form-section {
+        background: var(--bg-secondary);
+        padding: 2rem;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        transition: all 0.3s ease;
+    }
+
+    .form-section:hover {
+        box-shadow: var(--shadow);
+        transform: translateY(-5px);
+    }
+
+    .section-title {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+        color: var(--primary);
+        font-size: 1.5rem;
     }
 
     .form-group {
-        animation: slideUp 0.5s ease both;
+        margin-bottom: 1.5rem;
     }
 
     .form-group label {
-        display: block;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
         margin-bottom: 0.5rem;
-        color: var(--text);
         font-weight: 500;
     }
 
@@ -109,103 +176,82 @@
         font-size: 0.875rem;
     }
 
-    .form-group input {
+    .form-control {
         width: 100%;
-        padding: 0.75rem;
+        padding: 0.75rem 1rem;
         border: 2px solid var(--border);
-        border-radius: 0.5rem;
+        border-radius: 12px;
+        background: var(--bg-primary);
+        color: var(--text-primary);
         transition: all 0.3s ease;
-        background: var(--surface);
-        color: var(--text);
+        font-size: 1rem;
     }
 
-    .form-group input:focus {
-        border-color: var(--primary);
-        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    .form-control:focus {
         outline: none;
-    }
-
-    .form-section {
-        background: var(--background);
-        padding: 1.5rem;
-        border-radius: 0.5rem;
-        margin: 1rem 0;
-        animation: fadeIn 0.5s ease both;
-    }
-
-    .form-section h3 {
-        margin-bottom: 1rem;
-        color: var(--primary);
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
     }
 
     .lab-subject, .teacher-entry {
-        display: grid;
-        gap: 1rem;
+        background: var(--bg-primary);
+        padding: 1.5rem;
+        border-radius: 12px;
         margin-bottom: 1rem;
-        animation: slideUp 0.3s ease both;
-        background: var(--surface);
-        padding: 1rem;
-        border-radius: 0.5rem;
+        position: relative;
+        border: 1px solid var(--border);
+        transition: all 0.3s ease;
+        animation: fadeIn 0.5s ease;
+    }
+
+    .lab-subject:hover, .teacher-entry:hover {
         box-shadow: var(--shadow);
-    }
-
-    .lab-subject {
-        grid-template-columns: 1fr 1fr 1fr auto;
-    }
-
-    .teacher-entry {
-        grid-template-columns: 1fr 2fr auto;
+        transform: translateY(-2px);
     }
 
     .btn-remove {
-        background: var(--accent);
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: var(--danger);
         color: white;
         border: none;
-        border-radius: 0.5rem;
-        width: 40px;
-        height: 40px;
-        cursor: pointer;
-        transition: all 0.3s ease;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
     }
 
     .btn-remove:hover {
-        background: #e11d48;
-        transform: scale(1.05);
+        background: #dc2626;
+        transform: rotate(90deg);
+    }
+
+    .add-btn {
+        width: 100%;
+        margin-top: 1rem;
     }
 
     .submit-btn {
-        margin-top: 2rem;
-        width: 100%;
-        justify-content: center;
-        font-size: 1.1rem;
         padding: 1rem;
+        font-size: 1.1rem;
+        margin-top: 1rem;
+        background: var(--gradient-primary);
+        box-shadow: 0 4px 10px rgba(124, 58, 237, 0.3);
     }
 
-    @keyframes slideUp {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+    .submit-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 15px rgba(124, 58, 237, 0.4);
     }
 
     @media (max-width: 768px) {
-        .lab-subject, .teacher-entry {
-            grid-template-columns: 1fr;
-        }
-        
-        .btn-remove {
-            width: 100%;
-            height: 40px;
+        .form-section {
+            padding: 1.5rem;
         }
     }
 </style>
@@ -218,18 +264,27 @@
         div.style.opacity = '0';
         div.style.transform = 'translateY(20px)';
         div.innerHTML = `
-            <input type="text" name="lab_subjects[]" placeholder="Subject Name">
-            <input type="number" name="lab_hours[]" placeholder="Total Hours" min="1">
-            <input type="number" name="lab_consecutive[]" placeholder="Consecutive Periods" min="1" max="3">
+            <div class="form-group">
+                <label>Subject Name</label>
+                <input type="text" name="lab_subjects[]" class="form-control" placeholder="e.g., Physics Lab">
+            </div>
+            <div class="form-group">
+                <label>Total Hours</label>
+                <input type="number" name="lab_hours[]" class="form-control" placeholder="Hours" min="1">
+            </div>
+            <div class="form-group">
+                <label>Consecutive Periods</label>
+                <input type="number" name="lab_consecutive[]" class="form-control" placeholder="e.g., 2" min="1" max="3">
+            </div>
             <button type="button" class="btn-remove" onclick="removeEntry(this)">
                 <i class="fas fa-times"></i>
             </button>
         `;
         container.appendChild(div);
-        requestAnimationFrame(() => {
+        setTimeout(() => {
             div.style.opacity = '1';
             div.style.transform = 'translateY(0)';
-        });
+        }, 10);
     }
 
     function addTeacher() {
@@ -239,24 +294,46 @@
         div.style.opacity = '0';
         div.style.transform = 'translateY(20px)';
         div.innerHTML = `
-            <input type="text" name="teacher_names[]" placeholder="Teacher Name">
-            <input type="text" name="teacher_subjects[]" placeholder="Subjects (comma-separated)">
+            <div class="form-group">
+                <label>Teacher Name</label>
+                <input type="text" name="teacher_names[]" class="form-control" placeholder="e.g., Mr. Smith">
+            </div>
+            <div class="form-group">
+                <label>Subjects</label>
+                <input type="text" name="teacher_subjects[]" class="form-control" placeholder="e.g., Math, Physics">
+                <small>Separate subjects with commas</small>
+            </div>
             <button type="button" class="btn-remove" onclick="removeEntry(this)">
                 <i class="fas fa-times"></i>
             </button>
         `;
         container.appendChild(div);
-        requestAnimationFrame(() => {
+        setTimeout(() => {
             div.style.opacity = '1';
             div.style.transform = 'translateY(0)';
-        });
+        }, 10);
     }
 
     function removeEntry(button) {
         const entry = button.parentElement;
         entry.style.opacity = '0';
         entry.style.transform = 'translateY(20px)';
-        setTimeout(() => entry.remove(), 300);
+        setTimeout(() => {
+            entry.remove();
+        }, 300);
     }
+
+    // Add animation to form sections
+    document.addEventListener('DOMContentLoaded', function() {
+        const sections = document.querySelectorAll('.form-section');
+        sections.forEach((section, index) => {
+            section.style.opacity = '0';
+            section.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                section.style.opacity = '1';
+                section.style.transform = 'translateY(0)';
+            }, index * 200);
+        });
+    });
 </script>
 {% endblock %}
